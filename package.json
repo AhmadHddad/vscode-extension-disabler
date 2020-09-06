@@ -1,0 +1,69 @@
+{
+	"name": "extension-disabler",
+	"displayName": "extension-disabler",
+	"description": "will automaticaly disable extesions",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.48.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:extension-disabler"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"configuration": {
+			"title": "Settings for the Extension Disabler",
+			"properties": {
+				"extensionDisabler.profiles": {
+					"type": "array",
+					"default": [],
+					"description": "The names of the profiles that have been saved"
+				},
+				"extensionDisabler.storage": {
+					"type": "object",
+					"description": "These are the settings for each profile that has been saved. Probably don't hand-edit this",
+					"patternProperties": {
+						".*": {
+							"type": "object"
+						}
+					}
+				}
+			}
+		},
+		"commands": [
+			{
+				"command": "extension-disabler",
+				"title": "Extension disabler"
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"lint": "eslint src --ext ts",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.3",
+		"@types/mocha": "^8.0.0",
+		"@types/node": "^14.0.27",
+		"@types/sqlite3": "^3.1.6",
+		"@types/vscode": "^1.48.0",
+		"@typescript-eslint/eslint-plugin": "^3.8.0",
+		"@typescript-eslint/parser": "^3.8.0",
+		"eslint": "^7.6.0",
+		"glob": "^7.1.6",
+		"mocha": "^8.0.1",
+		"typescript": "^3.8.3",
+		"vscode-test": "^1.4.0"
+	},
+	"dependencies": {
+		"fs-extra": "^9.0.1",
+		"sqlite3": "^5.0.0"
+	}
+}
