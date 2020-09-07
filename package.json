@@ -1,13 +1,30 @@
 {
 	"name": "extension-disabler",
 	"displayName": "extension-disabler",
-	"description": "will automaticaly disable extesions",
+	"description": "will automatically disable extensions depending on workspace and profile.",
 	"version": "0.0.1",
+	"license": "MIT License",
+	"publisher": "Ahmad-Na-Hddad",
+	"preview": true,
+	"homepage": "https://github.com/AhmadHddad/vscode-extension-disabler/blob/master/README.md",
+	"author": {
+		"name": "Ahmad Na Hddad",
+		"url": "https://twitter.com/Ahmad_Na_Hddad"
+	},
+	"extensionKind": "ui",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/AhmadHddad/vscode-extension-disabler"
+	},
 	"engines": {
 		"vscode": "^1.48.0"
 	},
 	"categories": [
 		"Other"
+	],
+	"keywords": [
+		"vscode-settings",
+		"profile"
 	],
 	"activationEvents": [
 		"onCommand:extension-disabler"
