@@ -17,7 +17,7 @@ In Settings.json file under `extensionDisabler.profiles` you can see all availab
 also `extension disabled.storage` you can see all extensions that are disabled with profile name as a key.
 **so when you sync your settings throw devices you can still sync your profiles and use this extension to disable the same extensions in other projects**
 
-![Alt text](./howToUse.gif?raw=true "Optional Title")
+![Alt text](./images/howToUse.gif?raw=true "Optional Title")
 
 ## Credits
 
