@@ -6,6 +6,7 @@
 	"license": "MIT License",
 	"publisher": "Ahmad-Na-Hddad",
 	"preview": true,
+	"icon": "./images/logo.jpg",
 	"homepage": "https://github.com/AhmadHddad/vscode-extension-disabler/blob/master/README.md",
 	"author": {
 		"name": "Ahmad Na Hddad",
