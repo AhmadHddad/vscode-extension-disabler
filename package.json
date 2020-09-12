@@ -1,6 +1,6 @@
 {
 	"name": "extension-disabler",
-	"displayName": "extension-disabler",
+	"displayName": "Extension disabler",
 	"description": "will automatically disable extensions depending on workspace and profile.",
 	"version": "0.0.2",
 	"license": "MIT License",
@@ -28,7 +28,8 @@
 		"profile"
 	],
 	"activationEvents": [
-		"onCommand:extension-disabler"
+		"onCommand:extension-disabler",
+		"onCommand:extension-disabler-delete-profile"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -55,6 +56,10 @@
 			{
 				"command": "extension-disabler",
 				"title": "Extension disabler"
+			},
+			{
+				"command": "extension-disabler-delete-profile",
+				"title": "Extension disabler - Delete Profile"
 			}
 		]
 	},
