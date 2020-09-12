@@ -24,30 +24,38 @@ type ProfileExtensions =
   | { selectedExtensionsForDisable: Array<Extension> }
   | undefined;
 
+interface ALLProfileExtensions {
+  [key: string]: object;
+}
+
 class Config {
   public constructor(private context?: vscode.ExtensionContext) {}
 
-  private getConfig() {
+  private getConfig = () => {
     return vscode.workspace.getConfiguration(ConfigKey);
-  }
+  };
 
-  public getProfiles() {
+  public getProfiles = () => {
     let config = this.getConfig();
 
     return config.get<string[]>(ConfigProfilesKey, []).sort();
-  }
+  };
 
-  public getProfileExtensions(profile: string): ProfileExtensions {
+  public getProfileExtensions = (profile: string): ProfileExtensions => {
     return <ProfileExtensions>this.getStorage()[profile];
-  }
+  };
 
-  private getStorage() {
+  public getAllProfilesExtensions = (): ALLProfileExtensions => {
+    return this.getStorage();
+  };
+
+  private getStorage = () => {
     let config = this.getConfig();
 
     return config.get<Storage>(ConfigStorageKey, {});
-  }
+  };
 
-  public addProfile(profile: string) {
+  public addProfile = (profile: string) => {
     let config = this.getConfig();
 
     let existingProfiles = this.getProfiles();
@@ -57,9 +65,37 @@ class Config {
       [...existingProfiles, profile],
       vscode.ConfigurationTarget.Global
     );
-  }
+  };
 
-  public addProfileExtensions(profile: string, settings: Settings) {
+  public removeProfile = (profile: string) => {
+    let profiles = this.getProfiles();
+    let newProfiles = profiles
+      .slice(0, profiles.indexOf(profile))
+      .concat(profiles.slice(profiles.indexOf(profile) + 1, profiles.length));
+
+    let config = this.getConfig();
+
+    return config.update(
+      ConfigProfilesKey,
+      newProfiles,
+      vscode.ConfigurationTarget.Global
+    );
+  };
+
+  public removeProfileExtensions = (profile: string) => {
+    let profiles = new Map(Object.entries(this.getAllProfilesExtensions()));
+    let config = this.getConfig();
+
+    profiles.delete(profile);
+
+    return config.update(
+      ConfigStorageKey,
+      Object.fromEntries(profiles),
+      vscode.ConfigurationTarget.Global
+    );
+  };
+
+  public addProfileExtensions = (profile: string, settings: Settings) => {
     const deleteSetting = (key: string) => {
       if (`${ConfigKey}.${key}` in settings) {
         delete settings[`${ConfigKey}.${key}`];
@@ -72,9 +108,9 @@ class Config {
     let storage = this.getStorage();
     storage[profile] = settings;
     return this.updateStorage(storage);
-  }
+  };
 
-  private updateStorage(storage: Storage) {
+  private updateStorage = (storage: Storage) => {
     let config = this.getConfig();
 
     return config.update(
@@ -82,7 +118,7 @@ class Config {
       storage,
       vscode.ConfigurationTarget.Global
     );
-  }
+  };
 }
 
 export default Config;
