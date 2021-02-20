@@ -152,6 +152,23 @@ class Services {
     });
   };
 
+  public getSelectedExtensionsForDelete = async (
+    config: Config,
+    profile: string
+  ): Promise<Extension[] | undefined> => {
+    const profileExtensions = config.getProfileExtensions(profile);
+
+    if (profileExtensions?.selectedExtensionsForDisable?.length) {
+      return await vscode.window.showQuickPick(
+        profileExtensions.selectedExtensionsForDisable,
+        {
+          canPickMany: true,
+          placeHolder: `Select Extensions To Delete From "${profile}" Profile (will be enabled)`,
+        }
+      );
+    }
+  };
+
   public getSelectedApplyProfileToWorkSpace = async (): Promise<
     "Yes" | "No" | undefined
   > => {
