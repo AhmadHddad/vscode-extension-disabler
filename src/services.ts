@@ -3,6 +3,7 @@ import * as fs from "fs";
 import * as sqlite3 from "sqlite3";
 import * as utils from "./utils";
 import Config from "./config";
+import { EDIT_PROFILE_OPTIONS } from "./constants";
 
 const verbose = sqlite3.verbose();
 
@@ -56,7 +57,7 @@ class Services {
       }
     );
 
-    await db.run(query, (err) => {
+    db.run(query, (err) => {
       if (!err) {
         vscode.window.showInformationMessage(
           "Success!, Please restart workspace"
@@ -145,7 +146,65 @@ class Services {
     });
   };
 
-  selectExtensionsForDisable = async (): Promise<Array<Extension>> => {
+  public getSelectedEditOption = async () => {
+    return await vscode.window.showQuickPick(EDIT_PROFILE_OPTIONS, {
+      placeHolder: `Select Edit Option`,
+    });
+  };
+
+  public getSelectedApplyProfileToWorkSpace = async (): Promise<
+    "Yes" | "No" | undefined
+  > => {
+    const conformation = await vscode.window.showInformationMessage(
+      "Do you want to apply the updated profile to a workspace?",
+      "Yes",
+      "No"
+    );
+
+    return conformation as "Yes" | "No" | undefined;
+  };
+
+  public updateWorkSpaceToNewExtensions = async (
+    updatedExtensions: Extension[]
+  ) => {
+    const conformation = await this.getSelectedApplyProfileToWorkSpace();
+
+    if (conformation === "Yes") {
+      const selectedWorkspace = await this.getSelectedWorkspace();
+
+      if (!selectedWorkspace) {
+        return;
+      }
+
+      try {
+        await this.saveDisabledExtensionsToDB(
+          selectedWorkspace.id,
+          updatedExtensions
+        );
+      } catch (error) {
+        vscode.window.showErrorMessage(
+          `Could not write On Db - ${error?.message || error}`
+        );
+      }
+    }
+  };
+
+  public getSelectedExtensionsForAdd = async (
+    config: Config,
+    profile: string
+  ): Promise<Extension[] | undefined> => {
+    const allExtensionsNotInThisProfile = config.getAllExtensionsNotInThisProfile(
+      profile
+    );
+    if (allExtensionsNotInThisProfile?.length) {
+      return await vscode.window.showQuickPick(allExtensionsNotInThisProfile, {
+        canPickMany: true,
+        placeHolder: `Select Extensions To Add To ${profile} Profile (will be disabled)`,
+      });
+    }
+  };
+
+  getSelectExtensionsForDisable = async (): Promise<Array<Extension>> => {
     const allExtensions = this.getAllExtensions();
 
     return (
