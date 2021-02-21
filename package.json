@@ -2,7 +2,7 @@
 	"name": "extension-disabler",
 	"displayName": "Extension disabler",
 	"description": "will automatically disable extensions depending on workspace and profile.",
-	"version": "0.0.3",
+	"version": "0.1.0",
 	"license": "MIT License",
 	"publisher": "Ahmad-Na-Hddad",
 	"preview": true,
@@ -25,7 +25,9 @@
 	],
 	"keywords": [
 		"vscode-settings",
-		"profile"
+		"profile",
+		"extensions",
+		"extension"
 	],
 	"activationEvents": [
 		"onCommand:extension-disabler",
@@ -56,7 +58,7 @@
 		"commands": [
 			{
 				"command": "extension-disabler",
-				"title": "Extension disabler"
+				"title": "Extension disabler - Main"
 			},
 			{
 				"command": "extension-disabler-delete-profile",
