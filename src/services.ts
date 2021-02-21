@@ -64,6 +64,9 @@ class Services {
         );
         vscode.ConfigurationTarget.Global;
       }
+      if (err) {
+        vscode.window.showErrorMessage(err.message);
+      }
     });
 
     return;
@@ -187,22 +190,28 @@ class Services {
     const conformation = await this.getSelectedApplyProfileToWorkSpace();
 
     if (conformation === "Yes") {
-      const selectedWorkspace = await this.getSelectedWorkspace();
+      this.selectWorkSpaceAndSetDisabledExtensionsToDB(updatedExtensions);
+    }
+  };
 
-      if (!selectedWorkspace) {
-        return;
-      }
+  public selectWorkSpaceAndSetDisabledExtensionsToDB = async (
+    updatedExtensions: Extension[]
+  ) => {
+    const selectedWorkspace = await this.getSelectedWorkspace();
 
-      try {
-        await this.saveDisabledExtensionsToDB(
-          selectedWorkspace.id,
-          updatedExtensions
-        );
-      } catch (error) {
-        vscode.window.showErrorMessage(
-          `Could not write On Db - ${error?.message || error}`
-        );
-      }
+    if (!selectedWorkspace) {
+      return;
+    }
+
+    try {
+      await this.saveDisabledExtensionsToDB(
+        selectedWorkspace.id,
+        updatedExtensions
+      );
+    } catch (error) {
+      vscode.window.showErrorMessage(
+        `Could not write On Db - ${error?.message || error}`
+      );
     }
   };
 
