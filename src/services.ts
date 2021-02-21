@@ -211,6 +211,7 @@ class Services {
     profile: string
   ): Promise<Extension[] | undefined> => {
     const allExtensionsNotInThisProfile = config.getAllExtensionsNotInThisProfile(
+      this.getAllExtensions(),
       profile
     );
     if (allExtensionsNotInThisProfile?.length) {
