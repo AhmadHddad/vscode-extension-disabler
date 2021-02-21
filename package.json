@@ -29,7 +29,8 @@
 	],
 	"activationEvents": [
 		"onCommand:extension-disabler",
-		"onCommand:extension-disabler-delete-profile"
+		"onCommand:extension-disabler-delete-profile",
+		"onCommand:extension-disabler-edit-profile"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -60,6 +61,10 @@
 			{
 				"command": "extension-disabler-delete-profile",
 				"title": "Extension disabler - Delete Profile"
+			},
+			{
+				"command": "extension-disabler-edit-profile",
+				"title": "Extension disabler - Edit Profile"
 			}
 		]
 	},
