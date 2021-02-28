@@ -52,9 +52,15 @@ export async function activate(context: vscode.ExtensionContext) {
         await config.removeProfile(selectedProfile);
         await config.removeAllProfileExtensions(selectedProfile);
 
-        await vscode.window.showInformationMessage(
-          `Profile ${selectedProfile} has been deleted.`
+        const res = await vscode.window.showInformationMessage(
+          `Profile ${selectedProfile} has been deleted. Do you want to apply on workspace?`,
+          "Yes",
+          "No"
         );
+
+        if (res === "Yes") {
+          await services.selectWorkSpaceAndSetDisabledExtensionsToDB([]);
+        }
       } else {
         return;
       }
