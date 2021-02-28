@@ -43,11 +43,12 @@ class Services {
     );
 
     const vsCodeRout = utils.getVsCodeRout();
-    const query = `INSERT INTO "main"."ItemTable" ("key", "value") VALUES ('extensionsIdentifiers/disabled','${mappedExtensionsToDisable}')`;
+    const deleteFieldQuery = `DELETE FROM "main"."ItemTable" WHERE "key" = "extensionsIdentifiers/disabled"`;
+    const insertQuery = `INSERT INTO "main"."ItemTable" ("key", "value") VALUES ('extensionsIdentifiers/disabled','${mappedExtensionsToDisable}')`;
     const dbRout = `${vsCodeRout}/User/workspaceStorage/${workspaceId}/state.vscdb`;
 
-    // open the database
-    let db = new verbose.Database(
+    // open the main database
+    let mainDB = new verbose.Database(
       dbRout,
       sqlite3.OPEN_READWRITE,
       (err: any) => {
@@ -57,7 +58,15 @@ class Services {
       }
     );
 
-    db.run(query, (err) => {
+    mainDB.run(deleteFieldQuery, (err) => {
+      if (err) {
+        vscode.window.showErrorMessage(
+          `Could not run delete field on state.vscdb (${err.message})`
+        );
+      }
+    });
+
+    mainDB.run(insertQuery, (err) => {
       if (!err) {
         vscode.window.showInformationMessage(
           "Success!, Please restart workspace"
@@ -65,7 +74,9 @@ class Services {
         vscode.ConfigurationTarget.Global;
       }
       if (err) {
-        vscode.window.showErrorMessage(err.message);
+        vscode.window.showErrorMessage(
+          `Could not run query on state.vscdb(${err.message})`
+        );
       }
     });
 
@@ -101,11 +112,16 @@ class Services {
 
   getAllExtensions = (): Array<Extension> => {
     return vscode.extensions.all
-      .filter((ext) => !!ext.packageJSON.uuid)
+      .filter(
+        (ext) =>
+          Boolean(ext.packageJSON.uuid) &&
+          ext.packageJSON?.publisher !== "vscode" &&
+          ext.packageJSON?.publisher !== "ms-vscode"
+      )
       .map((ext) => ({
         id: ext.packageJSON.id,
         uuid: ext.packageJSON.uuid,
-        label: ext.packageJSON.name,
+        label: ext.packageJSON.displayName || ext.packageJSON.name,
       }));
   };
 
