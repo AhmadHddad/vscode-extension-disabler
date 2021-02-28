@@ -57,13 +57,13 @@ class Config {
     allExtensions: Extension[],
     profile: string
   ): Extension[] => {
-    const allProfileExtensions = this.getProfileExtensions(profile);
+    const allProfileExtensions =
+      this.getProfileExtensions(profile)?.selectedExtensionsForDisable || [];
 
-    return allExtensions.filter(
-      (ext) =>
-        !allProfileExtensions?.selectedExtensionsForDisable.find(
-          (ex) => ext.id === ex.id
-        )
+    return (
+      allExtensions.filter(
+        (ext) => !allProfileExtensions?.some((e) => e.id === ext.id)
+      ) || []
     );
   };
 
@@ -150,11 +150,10 @@ class Config {
   ): Extension[] | undefined => {
     let profiles = new Map(Object.entries(this.getAllProfilesExtensions()));
 
-    const profileExtensions = this.getProfileExtensions(profile);
+    const profileExtensions =
+      this.getProfileExtensions(profile)?.selectedExtensionsForDisable || [];
 
-    const updatedProfileExtensions = profileExtensions?.selectedExtensionsForDisable.concat(
-      extensionsToAdd
-    );
+    const updatedProfileExtensions = profileExtensions?.concat(extensionsToAdd);
 
     let config = this.getConfig();
 
