@@ -115,7 +115,9 @@ export async function activate(context: vscode.ExtensionContext) {
           );
 
           if (updatedProfileExtensions?.length) {
-            await services.updateWorkSpaceToNewExtensions(extensionsToAdd);
+            await services.updateWorkSpaceToNewExtensions(
+              updatedProfileExtensions
+            );
           }
         }
       }
