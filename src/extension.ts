@@ -27,12 +27,12 @@ export async function activate(context: vscode.ExtensionContext) {
           selectedExtensionsForDisable: selectedExtensionsForDisable,
         });
 
-        await services.updateWorkSpaceToNewExtensions(
+        await services.selectWorkSpaceAndSetDisabledExtensionsToDB(
           selectedExtensionsForDisable
         );
       }
     } else {
-      await services.updateWorkSpaceToNewExtensions(
+      await services.selectWorkSpaceAndSetDisabledExtensionsToDB(
         profileExtensions.selectedExtensionsForDisable
       );
     }
