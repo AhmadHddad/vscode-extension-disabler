@@ -59,7 +59,7 @@ export async function activate(context: vscode.ExtensionContext) {
         );
 
         if (res === "Yes") {
-          await services.selectWorkSpaceAndSetDisabledExtensionsToDB([]);
+          await services.selectWorkSpaceAndSetDisabledExtensionsToDB([], false);
         }
       } else {
         return;
@@ -98,7 +98,8 @@ export async function activate(context: vscode.ExtensionContext) {
           );
           if (updatedProfileExtensions?.length) {
             await services.updateWorkSpaceToNewExtensions(
-              updatedProfileExtensions
+              updatedProfileExtensions,
+              false
             );
           }
         }
