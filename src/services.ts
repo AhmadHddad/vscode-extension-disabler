@@ -27,10 +27,16 @@ type SavedProfile = void | string;
 
 type SelectedWorkspace = WorkSpaceForPick | undefined;
 
+type DBExtension = {
+  id: string | number;
+  uuid: string | number;
+};
+
 class Services {
   saveDisabledExtensionsToDB = async (
     workspaceId: string,
-    extensionsToDisable: Array<Extension>
+    extensionsToDisable: Array<Extension>,
+    deleteEnabled = true
   ) => {
     if (!extensionsToDisable.length) {
       return;
@@ -43,9 +49,12 @@ class Services {
     );
 
     const vsCodeRout = utils.getVsCodeRout();
+    const getAllEnabledExtensionsQuery = `SELECT "value" FROM "main"."ItemTable" WHERE "key" = "extensionsIdentifiers/enabled"`;
     const deleteFieldQuery = `DELETE FROM "main"."ItemTable" WHERE "key" = "extensionsIdentifiers/disabled"`;
     const insertQuery = `INSERT INTO "main"."ItemTable" ("key", "value") VALUES ('extensionsIdentifiers/disabled','${mappedExtensionsToDisable}')`;
     const dbRout = `${vsCodeRout}/User/workspaceStorage/${workspaceId}/state.vscdb`;
+    let enabledExtensions: DBExtension[] = [];
+    let initialEnabledExtensionCount = 0;
 
     // open the main database
     let mainDB = new verbose.Database(
@@ -58,28 +67,81 @@ class Services {
       }
     );
 
-    mainDB.run(deleteFieldQuery, (err) => {
-      if (err) {
-        vscode.window.showErrorMessage(
-          `Could not run delete field on state.vscdb (${err.message})`
-        );
-      }
+    mainDB.serialize(() => {
+      // mainDB.run(deleteFieldQuery, (err) => {
+      //   if (err) {
+      //     vscode.window.showErrorMessage(
+      //       `Could not run delete field on state.vscdb (${err.message})`
+      //     );
+      //   }
+      // });
+
+      mainDB.get(getAllEnabledExtensionsQuery, (_: any, row: any) => {
+        if (row?.value) {
+          try {
+            enabledExtensions = JSON.parse(row?.value);
+            initialEnabledExtensionCount = enabledExtensions?.length;
+          } catch (error) {
+            console.error("Error parsing enabled extensions", error);
+          }
+
+          if (enabledExtensions?.length) {
+            enabledExtensions = enabledExtensions.filter(
+              (extension) =>
+                extensionsToDisable.findIndex(
+                  (ext) => ext.id === extension.id
+                ) === -1
+            );
+          }
+        }
+
+        if (
+          initialEnabledExtensionCount !== enabledExtensions?.length &&
+          deleteEnabled
+        ) {
+          const enabledExtensionsToDisable = JSON.stringify(enabledExtensions);
+          const insertQuery = `INSERT INTO "main"."ItemTable" ("key", "value") VALUES ('extensionsIdentifiers/enabled','${enabledExtensionsToDisable}')`;
+
+          mainDB.run(insertQuery, (err) => {
+            if (err) {
+              vscode.window.showErrorMessage(
+                `Failed to remove extension from enabled extensions field, will try my best! ${err?.message}`
+              );
+            }
+          });
+        }
+
+        mainDB.run(insertQuery, (err) => {
+          if (!err) {
+            vscode.window.showInformationMessage(
+              "Success!, Please restart workspace"
+            );
+            vscode.ConfigurationTarget.Global;
+          }
+          if (err) {
+            vscode.window.showErrorMessage(
+              `Could not run query on state.vscdb(${err.message})`
+            );
+          }
+        });
+      });
     });
 
-    mainDB.run(insertQuery, (err) => {
-      if (!err) {
-        vscode.window.showInformationMessage(
-          "Success!, Please restart workspace"
-        );
-        vscode.ConfigurationTarget.Global;
-      }
-      if (err) {
-        vscode.window.showErrorMessage(
-          `Could not run query on state.vscdb(${err.message})`
-        );
-      }
-    });
+    // mainDB.run(insertQuery, (err) => {
+    //   if (!err) {
+    //     vscode.window.showInformationMessage(
+    //       "Success!, Please restart workspace"
+    //     );
+    //     vscode.ConfigurationTarget.Global;
+    //   }
+    //   if (err) {
+    //     vscode.window.showErrorMessage(
+    //       `Could not run query on state.vscdb(${err.message})`
+    //     );
+    //   }
+    // });
 
+    // mainDB.close();
     return;
   };
 
@@ -201,17 +263,22 @@ class Services {
   };
 
   public updateWorkSpaceToNewExtensions = async (
-    updatedExtensions: Extension[]
+    updatedExtensions: Extension[],
+    deleteEnabled = true
   ) => {
     const conformation = await this.getSelectedApplyProfileToWorkSpace();
 
     if (conformation === "Yes") {
-      this.selectWorkSpaceAndSetDisabledExtensionsToDB(updatedExtensions);
+      this.selectWorkSpaceAndSetDisabledExtensionsToDB(
+        updatedExtensions,
+        deleteEnabled
+      );
     }
   };
 
   public selectWorkSpaceAndSetDisabledExtensionsToDB = async (
-    updatedExtensions: Extension[]
+    updatedExtensions: Extension[],
+    deleteEnabled = true
   ) => {
     const selectedWorkspace = await this.getSelectedWorkspace();
 
