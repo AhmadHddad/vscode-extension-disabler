@@ -4,6 +4,7 @@ import {
   CONFIG_PROFILES_KEY,
   CONFIG_STORAGE_KEY,
 } from "./constants";
+import { Extension } from "./services";
 
 export interface Settings {
   [key: string]:
@@ -19,11 +20,6 @@ export interface Storage {
   [key: string]: Settings;
 }
 
-interface Extension {
-  id: number;
-  uuid: string;
-  label: string;
-}
 type ProfileExtensions =
   | { selectedExtensionsForDisable: Array<Extension> }
   | undefined;
@@ -62,7 +58,10 @@ class Config {
 
     return (
       allExtensions.filter(
-        (ext) => !allProfileExtensions?.some((e) => e.id === ext.id)
+        (ext) =>
+          !allProfileExtensions?.some(
+            (e) => e.id.toLowerCase() === ext.id.toLowerCase()
+          )
       ) || []
     );
   };
@@ -122,7 +121,10 @@ class Config {
     const profileExtensions = this.getProfileExtensions(profile);
 
     const updatedProfileExtensions = profileExtensions?.selectedExtensionsForDisable.filter(
-      (ex) => !extensionsToDelete.find((e) => e.id === ex.id)
+      (ex) =>
+        !extensionsToDelete.find(
+          (e) => e.id.toLowerCase() === ex.id.toLowerCase()
+        )
     );
 
     let config = this.getConfig();
