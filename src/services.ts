@@ -7,8 +7,8 @@ import { EDIT_PROFILE_OPTIONS } from "./constants";
 
 const verbose = sqlite3.verbose();
 
-interface Extension {
-  id: number;
+export interface Extension {
+  id: string;
   uuid: string;
   label: string;
 }
@@ -28,8 +28,8 @@ type SavedProfile = void | string;
 type SelectedWorkspace = WorkSpaceForPick | undefined;
 
 type DBExtension = {
-  id: string | number;
-  uuid: string | number;
+  id: string;
+  uuid: string;
 };
 
 class Services {
@@ -43,8 +43,8 @@ class Services {
     }
     let mappedExtensionsToDisable = JSON.stringify(
       extensionsToDisable.map((ext) => ({
-        id: ext.id,
-        uuid: ext.uuid,
+        id: ext.id.toLowerCase(),
+        uuid: ext.uuid.toLowerCase(),
       }))
     );
 
@@ -80,6 +80,7 @@ class Services {
         if (row?.value) {
           try {
             enabledExtensions = JSON.parse(row?.value);
+
             initialEnabledExtensionCount = enabledExtensions?.length;
           } catch (error) {
             console.error("Error parsing enabled extensions", error);
@@ -89,7 +90,7 @@ class Services {
             enabledExtensions = enabledExtensions.filter(
               (extension) =>
                 extensionsToDisable.findIndex(
-                  (ext) => ext.id === extension.id
+                  (ext) => ext.id.toLowerCase() === extension.id.toLowerCase()
                 ) === -1
             );
           }
@@ -269,7 +270,7 @@ class Services {
     const conformation = await this.getSelectedApplyProfileToWorkSpace();
 
     if (conformation === "Yes") {
-      this.selectWorkSpaceAndSetDisabledExtensionsToDB(
+      await this.selectWorkSpaceAndSetDisabledExtensionsToDB(
         updatedExtensions,
         deleteEnabled
       );
@@ -289,7 +290,8 @@ class Services {
     try {
       await this.saveDisabledExtensionsToDB(
         selectedWorkspace.id,
-        updatedExtensions
+        updatedExtensions,
+        deleteEnabled
       );
     } catch (error) {
       vscode.window.showErrorMessage(
