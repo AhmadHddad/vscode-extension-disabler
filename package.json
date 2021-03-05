@@ -12,7 +12,10 @@
 		"name": "Ahmad Na Hddad",
 		"url": "https://twitter.com/Ahmad_Na_Hddad"
 	},
-	"extensionKind": "ui",
+	"extensionKind": [
+		"ui",
+		"workspace"
+	],
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/AhmadHddad/vscode-extension-disabler"
