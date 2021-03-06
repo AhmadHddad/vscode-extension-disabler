@@ -13,7 +13,7 @@ A handy extension for those who work on different projects on Vscode, some exten
 
 ## HOW TO USE
 
-![How To Use Gif](./images/howToUse.gif?raw=true  "How to use GIF")
+![How To Use Gif](https://thumbs.gfycat.com/ImperfectScratchyBongo-size_restricted.gif)
 
 ## -Version 0.1.0
 
