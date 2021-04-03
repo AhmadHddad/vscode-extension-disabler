@@ -22,8 +22,8 @@ A handy extension for those who work on different projects on Vscode, some exten
   * Using extensions title as its label instead of id.
   * Fixed some bugs.
 
-## -Version 0.1.1
-* Updating extension to be compatible with vscode 1.5.5.
+## -Version 0.1.2
+* Updating extension to be compatible with vscode 1.55.
 * Fixing compatibility issue with Mac Os [#2](https://github.com/AhmadHddad/vscode-extension-disabler/issues/2).
 * Fix Microsoft extensions don't show up on extensions list [#3](https://github.com/AhmadHddad/vscode-extension-disabler/issues/3).
 
