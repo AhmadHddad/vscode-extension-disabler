@@ -50,14 +50,16 @@ class Services {
 
     const vsCodeRout = utils.getVsCodeRout();
     const getAllEnabledExtensionsQuery = `SELECT "value" FROM "main"."ItemTable" WHERE "key" = "extensionsIdentifiers/enabled"`;
-    const deleteFieldQuery = `DELETE FROM "main"."ItemTable" WHERE "key" = "extensionsIdentifiers/disabled"`;
+
+    // Future feature
+    // const deleteFieldQuery = `DELETE FROM "main"."ItemTable" WHERE "key" = "extensionsIdentifiers/disabled"`;
     const insertQuery = `INSERT INTO "main"."ItemTable" ("key", "value") VALUES ('extensionsIdentifiers/disabled','${mappedExtensionsToDisable}')`;
     const dbRout = `${vsCodeRout}/User/workspaceStorage/${workspaceId}/state.vscdb`;
     let enabledExtensions: DBExtension[] = [];
     let initialEnabledExtensionCount = 0;
 
     // open the main database
-    let mainDB = new verbose.Database(
+    const mainDB = new verbose.Database(
       dbRout,
       sqlite3.OPEN_READWRITE,
       (err: any) => {
