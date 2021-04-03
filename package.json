@@ -74,12 +74,17 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run compile",
+		"vscode:prepublish": "npm run prepackage && npm run compile",
 		"compile": "tsc -p ./",
 		"lint": "eslint src --ext ts",
 		"watch": "tsc -watch -p ./",
 		"pretest": "npm run compile && npm run lint",
-		"test": "node ./out/test/runTest.js"
+		"test": "node ./out/test/runTest.js",
+		"prepackage": "npm run linuxsqlitepackage && npm run macsqlitepackage && npm run winia32sqlitepackage && npm run winx64sqlitepackage",
+		"linuxsqlitepackage": "./node_modules/.bin/node-pre-gyp install --directory=./node_modules/sqlite3 --target_platform=linux --target_arch=x64",
+		"winia32sqlitepackage": "./node_modules/.bin/node-pre-gyp install --directory=./node_modules/sqlite3 --target_platform=win32 --target_arch=ia32",
+		"winx64sqlitepackage": "./node_modules/.bin/node-pre-gyp install --directory=./node_modules/sqlite3 --target_platform=win32 --target_arch=x64",
+		"macsqlitepackage": "./node_modules/.bin/node-pre-gyp install --directory=./node_modules/sqlite3 --target_platform=darwin --target_arch=x64"
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.3",
