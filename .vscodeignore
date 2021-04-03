@@ -11,3 +11,4 @@ extension-disabler.code-workspace
 tsconfig.json
 .git/**
 .history/**
+.vscodeignore
