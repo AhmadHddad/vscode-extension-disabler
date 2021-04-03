@@ -2,7 +2,6 @@ node_modules
 out
 .vscode
 .history
-CHANGELOG.md
 extension-disabler.code-workspace.json
 .eslintrc.json
 extension-disabler.code-workspace
