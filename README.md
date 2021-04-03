@@ -51,6 +51,8 @@ This is the first time I develop an extension, so a huge credit for:
 
 - Stack overflow community.
 
-  
+- **Special Thanks To**:
+* [Jawad Ikbarieh](https://twitter.com/jawad_ik), [Artin](https://github.com/lengthmin). For helping me fix [#2](https://github.com/AhmadHddad/vscode-extension-disabler/issues/2).
+
 
 If you have any ideas you can send a tweet to me at [Ahmad_NA_Hddad](https://twitter.com/Ahmad_Na_Hddad), I would be very grateful.
