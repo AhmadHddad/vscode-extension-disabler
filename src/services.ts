@@ -3,7 +3,7 @@ import * as fs from "fs";
 import * as sqlite3 from "sqlite3";
 import * as utils from "./utils";
 import Config from "./config";
-import { EDIT_PROFILE_OPTIONS } from "./constants";
+import { EDIT_PROFILE_OPTIONS, VSCODE_LATEST_VERSION } from "./constants";
 
 const verbose = sqlite3.verbose();
 
@@ -156,11 +156,33 @@ class Services {
       vscode.window.showErrorMessage("There are no workspaces registered!");
       return [];
     }
-    const workspaces3 = JSON.parse(file.toString()).openedPathsList.workspaces3;
 
-    return workspaces3.filter(
-      (opt: Object | String) => typeof opt === "object"
-    );
+    let workspaces: Array<WorkSpaceOptions> = [];
+
+    try {
+      if (vscode.version < VSCODE_LATEST_VERSION) {
+        // filtering workspaces because sometimes vscode add other stuff as string instead workspace obj
+        workspaces = (
+          JSON.parse(file.toString()).openedPathsList?.workspaces3 || []
+        ).filter((opt: Object | String) => typeof opt === "object");
+      } else if (vscode.version >= VSCODE_LATEST_VERSION) {
+        // mapping to new directory and new object type
+        workspaces = (
+          JSON.parse(file.toString()).openedPathsList?.entries || []
+        )
+          .filter((opt: any) => typeof opt === "object" && opt?.workspace)
+          .map(
+            (workspace: { workspace: { configPath: string; id: string } }) => ({
+              id: workspace.workspace.id,
+              configURIPath: workspace.workspace.configPath,
+            })
+          );
+      }
+    } catch (error) {
+      vscode.window.showErrorMessage(`Could not get workspaces - ${error}`);
+    }
+
+    return workspaces;
   };
 
   getWorkSpaceForPick = (): Array<WorkSpaceForPick> => {
