@@ -4,8 +4,6 @@ out/test/**
 src/**
 .gitignore
 vsc-extension-quickstart.md
-**/tsconfig.json
-**/.eslintrc.json
 **/*.map
 **/*.ts
 extension-disabler.code-workspace
@@ -13,4 +11,3 @@ extension-disabler.code-workspace
 tsconfig.json
 .git/**
 .history/**
-/out/**
