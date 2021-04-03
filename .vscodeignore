@@ -12,3 +12,5 @@ extension-disabler.code-workspace
 .eslintrc.json
 tsconfig.json
 .git/**
+.history/**
+/out/**
