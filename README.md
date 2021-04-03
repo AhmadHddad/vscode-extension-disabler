@@ -10,19 +10,22 @@
 A handy extension for those who work on different projects on Vscode, some extensions are not used and sometimes can be no ideal to be enabled on other projects, so instead of going around the currently installed extensions and disabling those which are not in use, you can simply use this extension to easily select extensions to be disabled, also will be saved as a profile in settings.json file, so it is easier to auto-disable same extensions on similar other projects.
 
  **Note***
- The extension does not effect permanently disabled extensions. 
+ **The extension does not effect permanently disabled extensions.** 
 
 ## HOW TO USE
 
 ![How To Use Gif](https://thumbs.gfycat.com/ImperfectScratchyBongo-size_restricted.gif)
 
 ## -Version 0.1.0
-
  * Added a new feature the ability to **Edit** extensions profile, **Adding** or **Deleting** extensions from profile and applying that change to a workspace.
   * **Filtering** built-in VSCode extensions.
   * Using extensions title as its label instead of id.
   * Fixed some bugs.
 
+## -Version 0.1.1
+* Updating extension to be compatible with vscode 1.5.5.
+* Fixing compatibility issue with Mac Os [#2](https://github.com/AhmadHddad/vscode-extension-disabler/issues/2).
+* Fix Microsoft extensions don't show up on extensions list [#3](https://github.com/AhmadHddad/vscode-extension-disabler/issues/3).
 
 In Settings.json file under `extensionDisabler.profiles` you can see all available profiles,
 
