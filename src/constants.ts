@@ -11,4 +11,4 @@ export const EDIT_PROFILE_OPTIONS = [
   { label: "Delete Extensions", value: EDIT_OPTION_DELETE },
 ];
 
-export const VSCODE_LATEST_VERSION = "1.5.5";
+export const VSCODE_LATEST_VERSION = "1.55.0";
