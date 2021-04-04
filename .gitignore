@@ -8,3 +8,4 @@ extension-disabler.code-workspace
 vsc-extension-quickstart.md
 tsconfig.json
 extension-disabler-0.0.1.vsix
+vscode-extension-disabler.code-workspace
