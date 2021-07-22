@@ -7,3 +7,7 @@ export function getVsCodeRout(): String {
 
   return `${route}/Code`;
 }
+
+export function getLastItem(arr: []): any | undefined {
+  return arr[arr.length - 1];
+}
