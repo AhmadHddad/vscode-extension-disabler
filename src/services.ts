@@ -16,6 +16,7 @@ export interface Extension {
 interface WorkSpaceOptions {
   id: string;
   configURIPath: string;
+  remoteAuthority?: string;
 }
 
 interface WorkSpaceForPick {
@@ -174,9 +175,13 @@ class Services {
         )
           .filter((opt: any) => typeof opt === "object" && opt?.workspace)
           .map(
-            (workspace: { workspace: { configPath: string; id: string } }) => ({
-              id: workspace.workspace.id,
-              configURIPath: workspace.workspace.configPath,
+            (entry: {
+              workspace: { configPath: string; id: string };
+              remoteAuthority: string | undefined;
+            }) => ({
+              id: entry.workspace.id,
+              configURIPath: entry.workspace.configPath,
+              remoteAuthority: entry.remoteAuthority,
             })
           );
       }
@@ -189,10 +194,14 @@ class Services {
 
   getWorkSpaceForPick = (): Array<WorkSpaceForPick> => {
     return this.getWorkSpaceList().map((option) => {
-      const splitPath = option.configURIPath.split("/");
+      const splitPath = utils.getLastItem(
+        option.configURIPath.split("/") as []
+      ) as string;
       return {
         id: option.id,
-        label: splitPath[splitPath.length - 1],
+        label: option.remoteAuthority?.length
+          ? `${splitPath} - ${option.remoteAuthority}`
+          : splitPath,
       };
     });
   };
@@ -317,7 +326,7 @@ class Services {
         updatedExtensions,
         deleteEnabled
       );
-    } catch (error) {
+    } catch (error: any) {
       vscode.window.showErrorMessage(
         `Could not write On Db - ${error?.message || error}`
       );
@@ -328,10 +337,8 @@ class Services {
     config: Config,
     profile: string
   ): Promise<Extension[] | undefined> => {
-    const allExtensionsNotInThisProfile = config.getAllExtensionsNotInThisProfile(
-      this.getAllExtensions(),
-      profile
-    );
+    const allExtensionsNotInThisProfile =
+      config.getAllExtensionsNotInThisProfile(this.getAllExtensions(), profile);
     if (allExtensionsNotInThisProfile?.length) {
       return await vscode.window.showQuickPick(allExtensionsNotInThisProfile, {
         canPickMany: true,
