@@ -120,12 +120,13 @@ class Config {
 
     const profileExtensions = this.getProfileExtensions(profile);
 
-    const updatedProfileExtensions = profileExtensions?.selectedExtensionsForDisable.filter(
-      (ex) =>
-        !extensionsToDelete.find(
-          (e) => e.id.toLowerCase() === ex.id.toLowerCase()
-        )
-    );
+    const updatedProfileExtensions =
+      profileExtensions?.selectedExtensionsForDisable.filter(
+        (ex) =>
+          !extensionsToDelete.find(
+            (e) => e.id.toLowerCase() === ex.id.toLowerCase()
+          )
+      );
 
     let config = this.getConfig();
 
@@ -141,7 +142,7 @@ class Config {
       );
 
       return updatedProfileExtensions;
-    } catch (error) {
+    } catch (error: any) {
       vscode.window.showErrorMessage("Could not save configuration", error);
     }
   };
@@ -171,7 +172,7 @@ class Config {
       );
 
       return updatedProfileExtensions;
-    } catch (error) {
+    } catch (error: any) {
       vscode.window.showErrorMessage("Could not save configuration", error);
     }
   };
