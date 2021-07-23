@@ -4,6 +4,7 @@ import * as sqlite3 from "sqlite3";
 import * as utils from "./utils";
 import Config from "./config";
 import { EDIT_PROFILE_OPTIONS, VSCODE_LATEST_VERSION } from "./constants";
+import { IConformation } from "./interfaces";
 
 const verbose = sqlite3.verbose();
 
@@ -34,6 +35,7 @@ type DBExtension = {
 };
 
 class Services {
+  // deleteEnabled is to delete first then insert to the DB.
   saveDisabledExtensionsToDB = async (
     workspaceId: string,
     extensionsToDisable: Array<Extension>,
@@ -42,7 +44,8 @@ class Services {
     if (!extensionsToDisable.length) {
       return;
     }
-    let mappedExtensionsToDisable = JSON.stringify(
+    
+    const mappedExtensionsToDisable = JSON.stringify(
       extensionsToDisable.map((ext) => ({
         id: ext.id.toLowerCase(),
         uuid: ext.uuid.toLowerCase(),
@@ -240,6 +243,11 @@ class Services {
         return;
       }
 
+      if (profiles.indexOf(profile) !== -1) {
+        vscode.window.showErrorMessage("This profile name is already taken!");
+        return;
+      }
+
       if (!profiles.length || profiles.indexOf(profile) === -1) {
         await config.addProfile(profile);
       }
@@ -284,17 +292,16 @@ class Services {
     }
   };
 
-  public getSelectedApplyProfileToWorkSpace = async (): Promise<
-    "Yes" | "No" | undefined
-  > => {
-    const conformation = await vscode.window.showInformationMessage(
-      "Do you want to apply the updated profile to a workspace?",
-      "Yes",
-      "No"
-    );
+  public getSelectedApplyProfileToWorkSpace =
+    async (): Promise<IConformation> => {
+      const conformation = await vscode.window.showInformationMessage(
+        "Do you want to apply the updated profile to a workspace?",
+        "Yes",
+        "No"
+      );
 
-    return conformation as "Yes" | "No" | undefined;
-  };
+      return conformation as IConformation;
+    };
 
   public updateWorkSpaceToNewExtensions = async (
     updatedExtensions: Extension[],
