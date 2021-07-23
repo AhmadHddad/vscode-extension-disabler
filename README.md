@@ -27,6 +27,10 @@ A handy extension for those who work on different projects on Vscode, some exten
 * Fixing compatibility issue with Mac Os [#2](https://github.com/AhmadHddad/vscode-extension-disabler/issues/2).
 * Fix Microsoft extensions don't show up on extensions list [#3](https://github.com/AhmadHddad/vscode-extension-disabler/issues/3).
 
+## -Version 0.1.3
+* Checking duplicate profile name.
+* Fixing [#6](https://github.com/AhmadHddad/vscode-extension-disabler/issues/6)
+
 In Settings.json file under `extensionDisabler.profiles` you can see all available profiles,
 
 also `extension disabled.storage` you can see all extensions that are disabled with profile name as a key.
