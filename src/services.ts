@@ -329,7 +329,7 @@ class Services {
         updatedExtensions,
         deleteEnabled
       );
-    } catch (error: any) {
+    } catch (error) {
       vscode.window.showErrorMessage(
         `Could not write On Db - ${error?.message || error}`
       );
