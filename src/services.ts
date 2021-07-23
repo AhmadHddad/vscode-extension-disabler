@@ -114,11 +114,10 @@ class Services {
           });
         }
 
-        mainDB.run(insertQuery, (err) => {
+        mainDB.run(insertQuery, async (err) => {
           if (!err) {
-            vscode.window.showInformationMessage(
-              "Success!, Please restart workspace"
-            );
+            await this.showSuccessMsgWithReloadAsync();
+            
             vscode.ConfigurationTarget.Global;
           }
           if (err) {
@@ -359,6 +358,23 @@ class Services {
         placeHolder: "Select extensions to disable",
       })) || []
     );
+  };
+
+  showSuccessMsgWithReloadAsync = async () => {
+    const successMsgConf = await vscode.window.showInformationMessage(
+      "Success!, Please reload workspace",
+      "Reload"
+    );
+
+    if (successMsgConf === "Reload") {
+      await this.reloadWindowAsync();
+    } else {
+      return;
+    }
+  };
+
+  reloadWindowAsync = async () => {
+    await vscode.commands.executeCommand("workbench.action.reloadWindow");
   };
 }
 
