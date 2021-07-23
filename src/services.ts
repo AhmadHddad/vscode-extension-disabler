@@ -41,10 +41,6 @@ class Services {
     extensionsToDisable: Array<Extension>,
     deleteEnabled = true
   ) => {
-    if (!extensionsToDisable.length) {
-      return;
-    }
-    
     const mappedExtensionsToDisable = JSON.stringify(
       extensionsToDisable.map((ext) => ({
         id: ext.id.toLowerCase(),
