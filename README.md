@@ -29,7 +29,8 @@ A handy extension for those who work on different projects on Vscode, some exten
 
 ## -Version 0.1.3
 * Checking duplicate profile name.
-* Fixing [#6](https://github.com/AhmadHddad/vscode-extension-disabler/issues/6)
+* Adding an option to reload the current workspace.
+* Fixing [#6](https://github.com/AhmadHddad/vscode-extension-disabler/issues/6).
 
 In Settings.json file under `extensionDisabler.profiles` you can see all available profiles,
 
