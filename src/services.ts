@@ -17,7 +17,6 @@ export interface Extension {
 interface WorkSpaceOptions {
   id: string;
   configURIPath: string;
-  remoteAuthority?: string;
 }
 
 interface WorkSpaceForPick {
@@ -117,7 +116,7 @@ class Services {
         mainDB.run(insertQuery, async (err) => {
           if (!err) {
             await this.showSuccessMsgWithReloadAsync();
-            
+
             vscode.ConfigurationTarget.Global;
           }
           if (err) {
@@ -168,20 +167,22 @@ class Services {
         ).filter((opt: Object | String) => typeof opt === "object");
       } else if (vscode.version >= VSCODE_LATEST_VERSION) {
         // mapping to new directory and new object type
-        workspaces = (
-          JSON.parse(file.toString()).openedPathsList?.entries || []
-        )
-          .filter((opt: any) => typeof opt === "object" && opt?.workspace)
-          .map(
-            (entry: {
-              workspace: { configPath: string; id: string };
-              remoteAuthority: string | undefined;
-            }) => ({
-              id: entry.workspace.id,
-              configURIPath: entry.workspace.configPath,
-              remoteAuthority: entry.remoteAuthority,
-            })
-          );
+        workspaces = [];
+
+        Object.values(JSON.parse(file.toString())?.windowsState || {}).forEach(
+          (v: any) => {
+            const workspaceIdentifier = v?.workspaceIdentifier as
+              | {
+                  id: string;
+                  configURIPath: string;
+                }
+              | undefined;
+
+            if (workspaceIdentifier) {
+              workspaces.push(workspaceIdentifier);
+            }
+          }
+        );
       }
     } catch (error) {
       vscode.window.showErrorMessage(`Could not get workspaces - ${error}`);
@@ -197,9 +198,7 @@ class Services {
       ) as string;
       return {
         id: option.id,
-        label: option.remoteAuthority?.length
-          ? `${splitPath} - ${option.remoteAuthority}`
-          : splitPath,
+        label: splitPath,
       };
     });
   };
@@ -328,7 +327,7 @@ class Services {
         updatedExtensions,
         deleteEnabled
       );
-    } catch (error) {
+    } catch (error: any) {
       vscode.window.showErrorMessage(
         `Could not write On Db - ${error?.message || error}`
       );
