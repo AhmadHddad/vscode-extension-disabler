@@ -2,7 +2,7 @@
 	"name": "extension-disabler",
 	"displayName": "Extension disabler",
 	"description": "will automatically disable extensions depending on workspace and profile.",
-	"version": "0.1.3",
+	"version": "0.1.4",
 	"license": "MIT License",
 	"publisher": "Ahmad-Na-Hddad",
 	"preview": true,
