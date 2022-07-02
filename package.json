@@ -2,10 +2,10 @@
 	"name": "extension-disabler",
 	"displayName": "Extension disabler",
 	"description": "will automatically disable extensions depending on workspace and profile.",
-	"version": "0.1.4",
+	"version": "0.2.0",
 	"license": "MIT License",
 	"publisher": "Ahmad-Na-Hddad",
-	"preview": true,
+	"preview": false,
 	"icon": "images/logo.jpg",
 	"homepage": "https://github.com/AhmadHddad/vscode-extension-disabler/blob/master/README.md",
 	"author": {
