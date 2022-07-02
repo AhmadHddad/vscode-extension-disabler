@@ -3,11 +3,7 @@ import * as fs from "fs";
 import * as sqlite3 from "sqlite3";
 import * as utils from "./utils";
 import Config from "./config";
-import {
-  EDIT_PROFILE_OPTIONS,
-  VSCODE_LATEST_VERSION,
-  WORKSPACES_ROOT_FOLDER_ROUT,
-} from "./constants";
+import { EDIT_PROFILE_OPTIONS, WORKSPACES_ROOT_FOLDER_ROUT } from "./constants";
 import { IConformation } from "./interfaces";
 
 const verbose = sqlite3.verbose();
