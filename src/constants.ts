@@ -1,3 +1,5 @@
+import { getVsCodeRout } from "./utils";
+
 export const CONFIG_KEY = "extensionDisabler";
 
 export const CONFIG_PROFILES_KEY = "profiles";
@@ -12,3 +14,5 @@ export const EDIT_PROFILE_OPTIONS = [
 ];
 
 export const VSCODE_LATEST_VERSION = "1.55.0";
+
+export const WORKSPACES_ROOT_FOLDER_ROUT = `${getVsCodeRout()}/User/workspaceStorage`;

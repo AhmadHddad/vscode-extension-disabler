@@ -3,7 +3,11 @@ import * as fs from "fs";
 import * as sqlite3 from "sqlite3";
 import * as utils from "./utils";
 import Config from "./config";
-import { EDIT_PROFILE_OPTIONS, VSCODE_LATEST_VERSION } from "./constants";
+import {
+  EDIT_PROFILE_OPTIONS,
+  VSCODE_LATEST_VERSION,
+  WORKSPACES_ROOT_FOLDER_ROUT,
+} from "./constants";
 import { IConformation } from "./interfaces";
 
 const verbose = sqlite3.verbose();
@@ -17,7 +21,6 @@ export interface Extension {
 interface WorkSpaceOptions {
   id: string;
   configURIPath: string;
-  remoteAuthority?: string;
 }
 
 interface WorkSpaceForPick {
@@ -59,15 +62,11 @@ class Services {
     let initialEnabledExtensionCount = 0;
 
     // open the main database
-    const mainDB = new verbose.Database(
-      dbRout,
-      sqlite3.OPEN_READWRITE,
-      (err: any) => {
-        if (err) {
-          console.error(err.message);
-        }
+    const mainDB = new verbose.Database(dbRout, sqlite3.OPEN_READWRITE, (err: any) => {
+      if (err) {
+        console.error(err.message);
       }
-    );
+    });
 
     mainDB.serialize(() => {
       // mainDB.run(deleteFieldQuery, (err) => {
@@ -98,10 +97,7 @@ class Services {
           }
         }
 
-        if (
-          initialEnabledExtensionCount !== enabledExtensions?.length &&
-          deleteEnabled
-        ) {
+        if (initialEnabledExtensionCount !== enabledExtensions?.length && deleteEnabled) {
           const enabledExtensionsToDisable = JSON.stringify(enabledExtensions);
           const insertQuery = `INSERT INTO "main"."ItemTable" ("key", "value") VALUES ('extensionsIdentifiers/enabled','${enabledExtensionsToDisable}')`;
 
@@ -117,7 +113,7 @@ class Services {
         mainDB.run(insertQuery, async (err) => {
           if (!err) {
             await this.showSuccessMsgWithReloadAsync();
-            
+
             vscode.ConfigurationTarget.Global;
           }
           if (err) {
@@ -147,47 +143,27 @@ class Services {
     return;
   };
 
+  getWorkSpacesIds = (): Array<string> =>
+    fs.readdirSync(WORKSPACES_ROOT_FOLDER_ROUT).map((file: string) => file);
+
   getWorkSpaceList = (): Array<WorkSpaceOptions> => {
-    const vsCodeRout = utils.getVsCodeRout();
-    let file = null;
-
-    try {
-      file = fs.readFileSync(`${vsCodeRout}/storage.json`);
-    } catch (error) {
-      vscode.window.showErrorMessage("There are no workspaces registered!");
-      return [];
-    }
-
-    let workspaces: Array<WorkSpaceOptions> = [];
-
-    try {
-      if (vscode.version < VSCODE_LATEST_VERSION) {
-        // filtering workspaces because sometimes vscode add other stuff as string instead workspace obj
-        workspaces = (
-          JSON.parse(file.toString()).openedPathsList?.workspaces3 || []
-        ).filter((opt: Object | String) => typeof opt === "object");
-      } else if (vscode.version >= VSCODE_LATEST_VERSION) {
-        // mapping to new directory and new object type
-        workspaces = (
-          JSON.parse(file.toString()).openedPathsList?.entries || []
-        )
-          .filter((opt: any) => typeof opt === "object" && opt?.workspace)
-          .map(
-            (entry: {
-              workspace: { configPath: string; id: string };
-              remoteAuthority: string | undefined;
-            }) => ({
-              id: entry.workspace.id,
-              configURIPath: entry.workspace.configPath,
-              remoteAuthority: entry.remoteAuthority,
-            })
-          );
+    const stuff: Array<WorkSpaceOptions> = [];
+    this.getWorkSpacesIds().forEach((workspaceId: string) => {
+      const workspaceRout = `${WORKSPACES_ROOT_FOLDER_ROUT}/${workspaceId}`;
+      try {
+        const workspaceName = JSON.parse(
+          fs.readFileSync(`${workspaceRout}/workspace.json`).toString()
+        );
+        stuff.push({
+          configURIPath: Object.values(workspaceName)[0] as string,
+          id: workspaceId,
+        });
+      } catch (error) {
+        console.log("🚀 Error Could not read workspace file", error);
       }
-    } catch (error) {
-      vscode.window.showErrorMessage(`Could not get workspaces - ${error}`);
-    }
+    });
 
-    return workspaces;
+    return stuff;
   };
 
   getWorkSpaceForPick = (): Array<WorkSpaceForPick> => {
@@ -197,9 +173,7 @@ class Services {
       ) as string;
       return {
         id: option.id,
-        label: option.remoteAuthority?.length
-          ? `${splitPath} - ${option.remoteAuthority}`
-          : splitPath,
+        label: splitPath,
       };
     });
   };
@@ -222,12 +196,9 @@ class Services {
   saveProfile = async (config: Config): Promise<SavedProfile> => {
     let profiles = config.getProfiles();
 
-    let profile = await vscode.window.showQuickPick(
-      [...profiles, "New profile"],
-      {
-        placeHolder: "Select a profile",
-      }
-    );
+    let profile = await vscode.window.showQuickPick([...profiles, "New profile"], {
+      placeHolder: "Select a profile",
+    });
 
     if (!profile || profile === "New profile") {
       profile = await vscode.window.showInputBox({
@@ -287,16 +258,15 @@ class Services {
     }
   };
 
-  public getSelectedApplyProfileToWorkSpace =
-    async (): Promise<IConformation> => {
-      const conformation = await vscode.window.showInformationMessage(
-        "Do you want to apply the updated profile to a workspace?",
-        "Yes",
-        "No"
-      );
+  public getSelectedApplyProfileToWorkSpace = async (): Promise<IConformation> => {
+    const conformation = await vscode.window.showInformationMessage(
+      "Do you want to apply the updated profile to a workspace?",
+      "Yes",
+      "No"
+    );
 
-      return conformation as IConformation;
-    };
+    return conformation as IConformation;
+  };
 
   public updateWorkSpaceToNewExtensions = async (
     updatedExtensions: Extension[],
@@ -328,7 +298,7 @@ class Services {
         updatedExtensions,
         deleteEnabled
       );
-    } catch (error) {
+    } catch (error: any) {
       vscode.window.showErrorMessage(
         `Could not write On Db - ${error?.message || error}`
       );
@@ -339,8 +309,10 @@ class Services {
     config: Config,
     profile: string
   ): Promise<Extension[] | undefined> => {
-    const allExtensionsNotInThisProfile =
-      config.getAllExtensionsNotInThisProfile(this.getAllExtensions(), profile);
+    const allExtensionsNotInThisProfile = config.getAllExtensionsNotInThisProfile(
+      this.getAllExtensions(),
+      profile
+    );
     if (allExtensionsNotInThisProfile?.length) {
       return await vscode.window.showQuickPick(allExtensionsNotInThisProfile, {
         canPickMany: true,

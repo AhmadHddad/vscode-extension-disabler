@@ -142,7 +142,7 @@ class Config {
       );
 
       return updatedProfileExtensions;
-    } catch (error) {
+    } catch (error:any) {
       vscode.window.showErrorMessage("Could not save configuration", error);
     }
   };
@@ -172,7 +172,7 @@ class Config {
       );
 
       return updatedProfileExtensions;
-    } catch (error) {
+    } catch (error : any) {
       vscode.window.showErrorMessage("Could not save configuration", error);
     }
   };
