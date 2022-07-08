@@ -30,7 +30,9 @@
 		"vscode-settings",
 		"profile",
 		"extensions",
-		"extension"
+		"extension",
+		"manager",
+		"workspace"
 	],
 	"activationEvents": [
 		"onCommand:extension-disabler",
