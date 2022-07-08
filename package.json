@@ -2,10 +2,10 @@
 	"name": "extension-disabler",
 	"displayName": "Extension disabler",
 	"description": "will automatically disable extensions depending on workspace and profile.",
-	"version": "0.1.4",
+	"version": "0.2.0",
 	"license": "MIT License",
 	"publisher": "Ahmad-Na-Hddad",
-	"preview": true,
+	"preview": false,
 	"icon": "images/logo.jpg",
 	"homepage": "https://github.com/AhmadHddad/vscode-extension-disabler/blob/master/README.md",
 	"author": {
@@ -30,7 +30,9 @@
 		"vscode-settings",
 		"profile",
 		"extensions",
-		"extension"
+		"extension",
+		"manager",
+		"workspace"
 	],
 	"activationEvents": [
 		"onCommand:extension-disabler",
@@ -75,16 +77,19 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run prepackage && npm run compile",
-		"compile": "tsc -p ./",
+		"compile": "rm -rf ./out && tsc -p ./",
 		"lint": "eslint src --ext ts",
 		"watch": "tsc -watch -p ./",
 		"pretest": "npm run compile && npm run lint",
 		"test": "node ./out/test/runTest.js",
-		"prepackage": "npm run linuxsqlitepackage && npm run macsqlitepackage && npm run winia32sqlitepackage && npm run winx64sqlitepackage",
-		"linuxsqlitepackage": "./node_modules/.bin/node-pre-gyp install --directory=./node_modules/sqlite3 --target_platform=linux --target_arch=x64",
-		"winia32sqlitepackage": "./node_modules/.bin/node-pre-gyp install --directory=./node_modules/sqlite3 --target_platform=win32 --target_arch=ia32",
-		"winx64sqlitepackage": "./node_modules/.bin/node-pre-gyp install --directory=./node_modules/sqlite3 --target_platform=win32 --target_arch=x64",
-		"macsqlitepackage": "./node_modules/.bin/node-pre-gyp install --directory=./node_modules/sqlite3 --target_platform=darwin --target_arch=x64"
+		"prepackage": "cp -R ./bin/sqlite3/ ./node_modules/sqlite3/lib/binding/",
+		"build": "npm run build:sqlite",
+		"build:sqlite": "npm run build:sqlite:linux && npm run build:sqlite:win32 && npm run build:sqlite:win64 && npm run build:sqlite:mac && npm run build:sqlite:mac:arm64 && cp -R ./node_modules/sqlite3/lib/binding/ ./bin/sqlite3/",
+		"build:sqlite:linux": "./node_modules/.bin/node-pre-gyp install --directory=./node_modules/sqlite3 --target_platform=linux --target_arch=x64",
+		"build:sqlite:win32": "./node_modules/.bin/node-pre-gyp install --directory=./node_modules/sqlite3 --target_platform=win32 --target_arch=ia32",
+		"build:sqlite:win64": "./node_modules/.bin/node-pre-gyp install --directory=./node_modules/sqlite3 --target_platform=win32 --target_arch=x64",
+		"build:sqlite:mac": "./node_modules/.bin/node-pre-gyp install --directory=./node_modules/sqlite3 --target_platform=darwin --target_arch=x64",
+		"build:sqlite:mac:arm64": "./node_modules/.bin/node-pre-gyp install --directory=./node_modules/sqlite3 --target_platform=darwin --target_arch=arm64"
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.3",
@@ -102,6 +107,8 @@
 	},
 	"dependencies": {
 		"node-pre-gyp": "^0.17.0",
-		"sqlite3": "^5.0.2"
+		"@mapbox/node-pre-gyp": "^1.0.9",
+		"sqlite": "^4.1.1",
+		"sqlite3": "^5.0.8"
 	}
 }
