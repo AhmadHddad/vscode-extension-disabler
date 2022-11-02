@@ -17,10 +17,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     const profileExtensions = config.getProfileExtensions(savedProfile);
 
-    if (
-      !profileExtensions ||
-      !profileExtensions?.selectedExtensionsForDisable.length
-    ) {
+    if (!profileExtensions || !profileExtensions?.selectedExtensionsForDisable.length) {
       const selectedExtensionsForDisable = await services.getSelectExtensionsForDisable();
       if (selectedExtensionsForDisable.length) {
         await config.addProfileExtensions(savedProfile, {
@@ -48,7 +45,7 @@ export async function activate(context: vscode.ExtensionContext) {
         placeHolder: "Select profile to delete",
       });
 
-      if (selectedProfile) {
+      if (selectedProfile?.length) {
         await config.removeProfile(selectedProfile);
         await config.removeAllProfileExtensions(selectedProfile);
 
@@ -65,16 +62,12 @@ export async function activate(context: vscode.ExtensionContext) {
         return;
       }
     } else {
-      vscode.window.showInformationMessage(
-        "You don't have any saved profiles!"
-      );
+      vscode.window.showInformationMessage("You don't have any saved profiles!");
     }
   }
 
   async function editProfile() {
-    let profiles = config
-      .getProfiles()
-      .map((profileLabel) => ({ label: profileLabel }));
+    let profiles = config.getProfiles().map((profileLabel) => ({ label: profileLabel }));
 
     const selectedProfile = await vscode.window.showQuickPick(profiles, {
       placeHolder: "Select Profile",
@@ -116,9 +109,7 @@ export async function activate(context: vscode.ExtensionContext) {
           );
 
           if (updatedProfileExtensions?.length) {
-            await services.updateWorkSpaceToNewExtensions(
-              updatedProfileExtensions
-            );
+            await services.updateWorkSpaceToNewExtensions(updatedProfileExtensions);
           }
         }
       }

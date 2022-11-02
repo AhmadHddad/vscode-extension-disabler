@@ -65,14 +65,6 @@ class Services {
     });
 
     mainDB.serialize(() => {
-      // mainDB.run(deleteFieldQuery, (err) => {
-      //   if (err) {
-      //     vscode.window.showErrorMessage(
-      //       `Could not run delete field on state.vscdb (${err.message})`
-      //     );
-      //   }
-      // });
-
       mainDB.get(getAllEnabledExtensionsQuery, (_: any, row: any) => {
         if (row?.value) {
           try {
@@ -121,21 +113,6 @@ class Services {
       });
     });
 
-    // mainDB.run(insertQuery, (err) => {
-    //   if (!err) {
-    //     vscode.window.showInformationMessage(
-    //       "Success!, Please restart workspace"
-    //     );
-    //     vscode.ConfigurationTarget.Global;
-    //   }
-    //   if (err) {
-    //     vscode.window.showErrorMessage(
-    //       `Could not run query on state.vscdb(${err.message})`
-    //     );
-    //   }
-    // });
-
-    // mainDB.close();
     return;
   };
 
@@ -162,8 +139,24 @@ class Services {
     return stuff;
   };
 
+  getCurrentWorkSpace = () => {
+    try {
+      let workspace = vscode.workspace.name?.split(" ") || [];
+      const workspaceName = workspace.splice(0, workspace.length)[0];
+      const workspaceOption = this.getWorkSpaceList().find((option) =>
+        (utils.getLastItem(option.configURIPath.split("/") as []) as string).includes(
+          workspaceName
+        )
+      );
+
+      return workspaceOption;
+    } catch (error) {}
+  };
+
   getWorkSpaceForPick = (): Array<WorkSpaceForPick> => {
-    return this.getWorkSpaceList().map((option) => {
+    const currentWorkSpace = this.getCurrentWorkSpace();
+
+    const workspaceListForPick = this.getWorkSpaceList().map((option) => {
       const splitPath = utils.getLastItem(
         option.configURIPath.split("/") as []
       ) as string;
@@ -172,6 +165,10 @@ class Services {
         label: splitPath,
       };
     });
+
+    return !!currentWorkSpace
+      ? workspaceListForPick.sort((a) => (a.id === currentWorkSpace.id ? -1 : 0))
+      : workspaceListForPick;
   };
 
   getAllExtensions = (): Array<Extension> => {
@@ -250,6 +247,10 @@ class Services {
           canPickMany: true,
           placeHolder: `Select Extensions To Delete From "${profile}" Profile (will be enabled)`,
         }
+      );
+    } else {
+      await vscode.window.showInformationMessage(
+        "ERROR - No profile extensions were found"
       );
     }
   };
@@ -330,8 +331,7 @@ class Services {
 
   showSuccessMsgWithReloadAsync = async () => {
     const successMsgConf = await vscode.window.showInformationMessage(
-      "Success!, Please reload workspace",
-      "Reload"
+      "Success!, Please VsCode"
     );
 
     if (successMsgConf === "Reload") {
