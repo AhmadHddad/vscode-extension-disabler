@@ -330,15 +330,7 @@ class Services {
   };
 
   showSuccessMsgWithReloadAsync = async () => {
-    const successMsgConf = await vscode.window.showInformationMessage(
-      "Success!, Please VsCode"
-    );
-
-    if (successMsgConf === "Reload") {
-      await this.reloadWindowAsync();
-    } else {
-      return;
-    }
+    await vscode.window.showInformationMessage("Success!, Please restart VsCode");
   };
 
   reloadWindowAsync = async () => {
