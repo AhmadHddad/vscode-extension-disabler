@@ -2,7 +2,7 @@
 	"name": "extension-disabler",
 	"displayName": "Extension disabler",
 	"description": "will automatically disable extensions depending on workspace and profile.",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"license": "MIT License",
 	"publisher": "Ahmad-Na-Hddad",
 	"preview": false,
@@ -76,7 +76,6 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run prepackage && npm run compile",
 		"compile": "rm -rf ./out && tsc -p ./",
 		"lint": "eslint src --ext ts",
 		"watch": "tsc -watch -p ./",
